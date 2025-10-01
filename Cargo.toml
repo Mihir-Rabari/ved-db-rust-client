@@ -1,0 +1,51 @@
+[package]
+name = "veddb-client"
+version = "0.1.0"
+edition = "2021"
+description = "Official Rust client for VedDB - High-performance shared memory KV store with Pub/Sub capabilities"
+repository = "https://github.com/mihir-Rabari/ved-db-server"
+license = "MIT"
+keywords = ["kv", "database", "shared-memory", "pubsub"]
+categories = ["database", "network-programming"]
+
+[lib]
+name = "veddb_client"
+path = "src/lib.rs"
+doc = true
+test = true
+bench = true
+
+[dependencies]
+tokio = { version = "1.0", features = ["full"] }
+thiserror = "1.0"
+bytes = "1.0"
+tracing = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+async-channel = "1.8"
+tracing-subscriber = { version = "0.3", optional = true }
+clap = { version = "4.0", features = ["derive", "env"] }
+colored = "2.0"
+prettytable-rs = "0.10"
+indicatif = { version = "0.17", features = ["tokio"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+tempfile = "3.2"
+# wiremock removed as it was causing dependency issues
+
+[dev-dependencies.criterion]
+version = "0.5"
+features = ["html_reports"]
+
+[[bench]]
+name = "benchmarks"
+harness = false
+
+[[bin]]
+name = "veddb-cli"
+path = "src/bin/veddb-cli.rs"
+doc = false
+
+[features]
+default = ["tracing-subscriber"]
