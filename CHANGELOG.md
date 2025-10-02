@@ -6,6 +6,20 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
 ---
 
+## [0.0.12] - 2025-10-02
+
+### Added
+- 📚 **Comprehensive documentation** - Beautiful docs.rs page with examples
+- 🎨 **Badges** - Crates.io, docs.rs, and license badges
+- 📖 **Usage examples** - Connection pooling, binary data, error handling
+- 🖥️ **CLI documentation** - Complete CLI usage in docs
+
+### Changed
+- Enhanced library documentation with multiple examples
+- Improved API documentation structure
+
+---
+
 ## [0.0.11] - 2025-10-02
 
 ### Added

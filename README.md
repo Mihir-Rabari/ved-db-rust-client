@@ -1,4 +1,4 @@
-# VedDB Rust Client v0.0.11
+# VedDB Rust Client v0.0.12
 
 **Official Rust client library and CLI tool for VedDB Server**
 
@@ -32,7 +32,7 @@ VedDB CLI is currently tested and supported on **Windows**. You can download the
 
 **Option 2: GitHub Releases**
 - Go to [Releases](https://github.com/Mihir-Rabari/ved-db-rust-client/releases)
-- Download `veddb-cli-v0.0.11-windows.exe`
+- Download `veddb-cli-v0.0.12-windows.exe`
 
 ### Basic Usage
 
@@ -148,7 +148,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-veddb-client = "0.0.11"
+veddb-client = "0.0.12"
 tokio = { version = "1", features = ["full"] }
 ```
 
