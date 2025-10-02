@@ -1,6 +1,6 @@
 [package]
 name = "veddb-client"
-version = "0.0.11"
+version = "0.0.12"
 edition = "2021"
 authors = ["Mihir Rabari <mihirrabari2604@gmail.com>"]
 description = "Official Rust client library and CLI for VedDB - Fast, lightweight in-memory key-value database"
