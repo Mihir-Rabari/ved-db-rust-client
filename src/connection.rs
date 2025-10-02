@@ -80,17 +80,26 @@ impl Connection {
 
         // Send the command
         let cmd_bytes = cmd.to_bytes();
-        trace!("Sending {} bytes: {:?}", cmd_bytes.len(), cmd_bytes);
+        debug!("Sending command: {} bytes", cmd_bytes.len());
+        debug!("Command header: {:?}", &cmd_bytes[..std::cmp::min(24, cmd_bytes.len())]);
 
         timeout(self.request_timeout, stream.write_all(&cmd_bytes))
             .await
             .map_err(Error::Timeout)??;
+        
+        debug!("Command sent, flushing...");
+        timeout(self.request_timeout, stream.flush())
+            .await
+            .map_err(Error::Timeout)??;
+        debug!("Command flushed");
 
-        // Read the response header (16 bytes)
-        let mut header_buf = [0u8; 16];
+        // Read the response header (20 bytes)
+        debug!("Reading response header (20 bytes)...");
+        let mut header_buf = [0u8; 20];
         timeout(self.request_timeout, stream.read_exact(&mut header_buf))
             .await
             .map_err(Error::Timeout)??;
+        debug!("Response header received: {:?}", &header_buf[..8]);
 
         // Parse the header
         let payload_len =
@@ -112,7 +121,7 @@ impl Connection {
         }
 
         // Combine header and payload for parsing
-        let mut response_bytes = Vec::with_capacity(16 + payload_len as usize);
+        let mut response_bytes = Vec::with_capacity(20 + payload_len as usize);
         response_bytes.extend_from_slice(&header_buf);
         response_bytes.extend_from_slice(&payload);
 
@@ -256,6 +265,27 @@ impl Client {
             .await?
             .cas(key, expected_version, value)
             .await
+    }
+
+    /// List all keys (uses Fetch opcode 0x09)
+    pub async fn list_keys(&self) -> Result<Vec<String>> {
+        let conn = self.pool.get().await?;
+        let cmd = Command::fetch(conn.next_seq(), Bytes::new());
+        let response = conn.execute(cmd).await?;
+        
+        if !response.is_ok() {
+            return Err(Error::Protocol(format!("List keys failed: {:?}", response.status())));
+        }
+        
+        // Parse newline-separated keys
+        let keys_str = String::from_utf8_lossy(&response.payload);
+        let keys: Vec<String> = keys_str
+            .lines()
+            .filter(|s| !s.is_empty())
+            .map(|s| s.to_string())
+            .collect();
+        
+        Ok(keys)
     }
 }
 

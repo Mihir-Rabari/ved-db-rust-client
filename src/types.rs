@@ -46,8 +46,10 @@ pub enum OpCode {
     Unsubscribe = 0x07,
     /// Publish to a topic
     Publish = 0x08,
+    /// Fetch data
+    Fetch = 0x09,
     /// Fetch server info
-    Info = 0x09,
+    Info = 0x0A,
 }
 
 impl TryFrom<u8> for OpCode {
@@ -63,7 +65,8 @@ impl TryFrom<u8> for OpCode {
             0x06 => Ok(OpCode::Subscribe),
             0x07 => Ok(OpCode::Unsubscribe),
             0x08 => Ok(OpCode::Publish),
-            0x09 => Ok(OpCode::Info),
+            0x09 => Ok(OpCode::Fetch),
+            0x0A => Ok(OpCode::Info),
             _ => Err(ProtocolError::InvalidOpCode(value)),
         }
     }
@@ -229,18 +232,23 @@ impl Command {
         )
     }
 
+    /// Create a FETCH command (list keys)
+    pub fn fetch(seq: u32, key: impl Into<Bytes>) -> Self {
+        Self::new(CommandHeader::new(OpCode::Fetch, seq), key, Bytes::new())
+    }
+
     /// Serialize the command to bytes
     pub fn to_bytes(&self) -> Bytes {
         let mut buf = BytesMut::with_capacity(24 + self.key.len() + self.value.len());
 
-        // Write header (24 bytes)
+        // Write header (24 bytes) - ALL LITTLE-ENDIAN
         buf.put_u8(self.header.opcode);
         buf.put_u8(self.header.flags);
-        buf.put_u16(self.header.reserved);
-        buf.put_u32(self.header.seq);
-        buf.put_u32(self.header.key_len);
-        buf.put_u32(self.header.value_len);
-        buf.put_u64(self.header.extra);
+        buf.put_u16_le(self.header.reserved);
+        buf.put_u32_le(self.header.seq);
+        buf.put_u32_le(self.header.key_len);
+        buf.put_u32_le(self.header.value_len);
+        buf.put_u64_le(self.header.extra);
 
         // Write key and value
         buf.extend_from_slice(&self.key);
@@ -250,7 +258,7 @@ impl Command {
     }
 }
 
-/// Response header (16 bytes)
+/// Response header (20 bytes)
 #[derive(Debug, Clone, Copy)]
 #[repr(C)]
 pub struct ResponseHeader {
@@ -264,8 +272,8 @@ pub struct ResponseHeader {
     pub seq: u32,
     /// Payload length
     pub payload_len: u32,
-    /// Reserved for future use
-    pub reserved2: u32,
+    /// Extra data (version, offset, or other metadata)
+    pub extra: u64,
 }
 
 impl ResponseHeader {
@@ -277,7 +285,7 @@ impl ResponseHeader {
             reserved: 0,
             seq,
             payload_len: 0,
-            reserved2: 0,
+            extra: 0,
         }
     }
 
@@ -327,17 +335,17 @@ impl Response {
 
     /// Deserialize a response from bytes
     pub fn from_bytes(mut bytes: &[u8]) -> Result<Self, ProtocolError> {
-        if bytes.len() < 16 {
+        if bytes.len() < 20 {
             return Err(ProtocolError::InvalidFormat("response too short".into()));
         }
 
-        // Read header (16 bytes)
+        // Read header (20 bytes) - ALL LITTLE-ENDIAN
         let status = StatusCode::try_from(bytes.get_u8())?;
         let flags = bytes.get_u8();
-        let reserved = bytes.get_u16();
-        let seq = bytes.get_u32();
-        let payload_len = bytes.get_u32() as usize;
-        let reserved2 = bytes.get_u32();
+        let reserved = bytes.get_u16_le();
+        let seq = bytes.get_u32_le();
+        let payload_len = bytes.get_u32_le() as usize;
+        let extra = bytes.get_u64_le();
 
         // Check payload length
         if bytes.remaining() < payload_len {
@@ -356,7 +364,7 @@ impl Response {
                 reserved,
                 seq,
                 payload_len: payload_len as u32,
-                reserved2,
+                extra,
             },
             payload,
         })
@@ -393,10 +401,10 @@ mod tests {
         let mut buf = BytesMut::new();
         buf.put_u8(StatusCode::Ok as u8); // status
         buf.put_u8(0); // flags
-        buf.put_u16(0); // reserved
-        buf.put_u32(42); // seq
-        buf.put_u32(5); // payload_len
-        buf.put_u32(0); // reserved2
+        buf.put_u16_le(0); // reserved
+        buf.put_u32_le(42); // seq
+        buf.put_u32_le(5); // payload_len
+        buf.put_u64_le(0); // extra
         buf.extend_from_slice(b"hello"); // payload
 
         let resp = Response::from_bytes(&buf).unwrap();

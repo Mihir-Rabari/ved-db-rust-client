@@ -133,10 +133,8 @@ async fn handle_kv_command(cmd: KvCommand, client: Client, format: OutputFormat)
                 println!("OK");
             }
         }
-        KvCommand::List { pattern } => {
-            // Note: This is a placeholder - you'll need to implement the list_keys method
-            // in your Client struct
-            let keys: Vec<String> = vec![]; // client.list_keys(pattern).await?;
+        KvCommand::List { pattern: _ } => {
+            let keys = client.list_keys().await?;
 
             match format {
                 OutputFormat::Raw => {

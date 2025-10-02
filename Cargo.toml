@@ -1,11 +1,11 @@
 [package]
 name = "veddb-client"
-version = "0.1.0"
+version = "0.0.11"
 edition = "2021"
-description = "Official Rust client for VedDB - High-performance shared memory KV store with Pub/Sub capabilities"
+description = "Official Rust client and CLI for VedDB - Fast, lightweight in-memory key-value database"
 repository = "https://github.com/mihir-Rabari/ved-db-server"
 license = "MIT"
-keywords = ["kv", "database", "shared-memory", "pubsub"]
+keywords = ["kv", "database", "client", "cli"]
 categories = ["database", "network-programming"]
 
 [lib]

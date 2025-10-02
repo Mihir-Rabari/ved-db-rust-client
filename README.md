@@ -1,104 +1,281 @@
-# VedDB Client Libraries
+# VedDB Rust Client v0.0.11
 
-This directory contains client implementations for VedDB in various programming languages.
+**Official Rust client and CLI for VedDB Server**
 
-## Available Clients
+A fast, easy-to-use Rust client library and command-line interface for interacting with VedDB Server. Built with async/await and designed for high performance.
 
-### Rust Client (`rust-client/`)
-The official Rust client for VedDB providing:
-- Async/await support with Tokio
-- Connection pooling
-- Automatic reconnection
-- Type-safe API
-- CLI tool for database operations
+![Windows](https://img.shields.io/badge/platform-windows-blue)
+![Rust](https://img.shields.io/badge/rust-1.75+-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
 
-## Client Features
+## ✨ Features
 
-All VedDB clients provide:
-- **Connection Management**: Pooling and automatic reconnection
-- **Protocol Support**: Binary protocol for efficient communication
-- **Type Safety**: Strongly typed operations (where applicable)
-- **Error Handling**: Comprehensive error types
-- **Performance**: Optimized for low latency
+- **🚀 Async/Await**: Built on Tokio for high-performance async I/O
+- **🔌 Connection Pooling**: Efficient connection management
+- **📝 CLI Tool**: Easy-to-use command-line interface
+- **🎯 Type-Safe**: Full Rust type safety and error handling
+- **📊 Multiple Output Formats**: Table, JSON, and raw output
+- **⚡ Fast**: Sub-millisecond operation latency
 
-## Installation
+## 🚀 Quick Start
 
-### Rust Client
-```bash
-cd rust-client
-cargo build --release
+### Download & Installation (Windows)
+
+VedDB CLI is currently tested and supported on **Windows**. You can download the pre-built executable:
+
+**Option 1: Download from Website**
+- Visit our website and download the latest Windows CLI `.exe`
+
+**Option 2: GitHub Releases**
+- Go to [Releases](https://github.com/yourusername/ved-db/releases)
+- Download `veddb-cli-v0.0.11-windows.exe`
+
+### Basic Usage
+
+```
+# Ping the server
+veddb-cli.exe ping
+
+# Set a key-value pair
+veddb-cli.exe kv set name "John Doe"
+
+# Get a value
+veddb-cli.exe kv get name
+
+# List all keys
+veddb-cli.exe kv list
+
+# Delete a key
+veddb-cli.exe kv del name
 ```
 
-Or add to your `Cargo.toml`:
+## 📖 CLI Commands
+
+### Global Options
+
+```
+veddb-cli.exe [OPTIONS] <COMMAND>
+
+Options:
+  -s, --server <SERVER>  Server address [default: 127.0.0.1:50051]
+  -f, --format <FORMAT>  Output format [default: table] [values: table, json, raw]
+  -v, --verbose          Enable verbose output
+  -h, --help             Print help
+  -V, --version          Print version
+```
+
+### KV Commands
+
+#### Set a Key
+```
+veddb-cli.exe kv set <KEY> <VALUE>
+
+Examples:
+veddb-cli.exe kv set name "Alice"
+veddb-cli.exe kv set age 25
+veddb-cli.exe kv set city "New York"
+```
+
+#### Get a Key
+```
+veddb-cli.exe kv get <KEY>
+
+Example output:
++------+-------+
+| Key  | Value |
++------+-------+
+| name | Alice |
++------+-------+
+```
+
+#### Delete a Key
+```
+veddb-cli.exe kv del <KEY>
+```
+
+#### List All Keys
+```
+veddb-cli.exe kv list
+
+Example output:
++------+
+| Keys |
++------+
+| name |
+| age  |
+| city |
++------+
+```
+
+### Ping Command
+
+Check server connectivity:
+```
+veddb-cli.exe ping
+
+Example output:
++--------+---------+
+| Status | Latency |
++--------+---------+
+| pong   | 0 ms    |
++--------+---------+
+```
+
+### Output Formats
+
+**Table Format (Default)**
+```
+veddb-cli.exe kv get name
+```
+
+**JSON Format**
+```
+veddb-cli.exe -f json kv get name
+```
+
+**Raw Format**
+```
+veddb-cli.exe -f raw kv get name
+```
+
+## 🔧 Using as a Library
+
+Add to your `Cargo.toml`:
+
 ```toml
 [dependencies]
-veddb-client = { path = "../path/to/clients/rust-client" }
+veddb-client = "0.0.11"
+tokio = { version = "1", features = ["full"] }
 ```
 
-## Usage Example
+### Basic Example
 
-### Rust
 ```rust
-use veddb_client::{Client, Result};
+use veddb_client::Client;
 
 #[tokio::main]
-async fn main() -> Result<()> {
-    // Connect to VedDB server
-    let addr = "127.0.0.1:50051".parse()?;
-    let client = Client::connect(addr).await?;
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Connect to server
+    let client = Client::connect("127.0.0.1:50051").await?;
     
-    // Set a value
-    client.set("key", "value".as_bytes()).await?;
+    // Ping server
+    client.ping().await?;
+    println!("Server is alive!");
     
-    // Get a value
-    let value = client.get("key").await?;
+    // Set a key
+    client.set("name", "Alice").await?;
+    
+    // Get a key
+    let value = client.get("name").await?;
     println!("Value: {}", String::from_utf8_lossy(&value));
+    
+    // List all keys
+    let keys = client.list_keys().await?;
+    println!("Keys: {:?}", keys);
+    
+    // Delete a key
+    client.delete("name").await?;
     
     Ok(())
 }
 ```
 
-## CLI Tools
+### Connection Pooling
 
-### Rust CLI
-```bash
-# Build the CLI
-cd rust-client
-cargo build --release --bin veddb-cli
+```rust
+use veddb_client::Client;
 
-# Use the CLI
-./target/release/veddb-cli --server 127.0.0.1:50051 kv get mykey
-./target/release/veddb-cli --server 127.0.0.1:50051 kv set mykey "myvalue"
-./target/release/veddb-cli --server 127.0.0.1:50051 kv del mykey
-./target/release/veddb-cli --server 127.0.0.1:50051 kv list
+#[tokio::main]
+async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    // Create client with connection pool
+    let client = Client::with_pool_size("127.0.0.1:50051", 10).await?;
+    
+    // Use client (connections are automatically managed)
+    client.set("key", "value").await?;
+    
+    Ok(())
+}
 ```
 
-## Protocol
+## 🛠️ Development
 
-VedDB clients communicate using a binary protocol:
-- Fixed-size command/response headers
-- Variable-size payloads
-- Efficient serialization
-- Support for streaming operations
+### Building from Source
 
-## Contributing
+**Prerequisites:**
+- Rust 1.75 or later ([Install Rust](https://rustup.rs/))
+- Windows 10/11
 
-To add a new client implementation:
-1. Create a new directory under `clients/` (e.g., `python-client/`)
-2. Implement the VedDB protocol
-3. Add comprehensive tests
-4. Update this README with installation and usage instructions
-5. Submit a pull request
+```
+git clone https://github.com/yourusername/ved-db.git
+cd ved-db\ved-db-rust-client
+cargo build --release
+```
 
-## Future Clients
+CLI binary will be at: `target\release\veddb-cli.exe`
 
-Planned client implementations:
-- [ ] Python
-- [ ] Go
-- [ ] Node.js/TypeScript
-- [ ] Java
-- [ ] C/C++
+### Running Tests
 
-## License
+```
+cargo test
+```
 
-MIT License - see LICENSE file in the root directory
+### Building Just the CLI
+
+```
+cargo build --release --bin veddb-cli
+```
+
+## 📊 Performance
+
+- **Latency**: < 1ms for most operations
+- **Connection Pooling**: Reuses connections for better performance
+- **Async I/O**: Non-blocking operations with Tokio
+
+## 🔌 Protocol Details
+
+The client implements the VedDB binary protocol:
+
+- **Little-endian** encoding for all integers
+- **Command format**: 24-byte header + payload
+- **Response format**: 20-byte header + payload
+- **Automatic retries**: On connection failures
+- **Timeout handling**: Configurable request timeouts
+
+## 🗺️ Roadmap
+
+### Current (v0.0.11)
+- ✅ Basic KV operations (SET, GET, DELETE, LIST)
+- ✅ PING command
+- ✅ CLI with table/JSON/raw output
+- ✅ Connection pooling
+- ✅ Async/await support
+
+### Planned (v0.1.x)
+- ⏳ Pub/Sub support
+- ⏳ TTL operations
+- ⏳ Batch operations
+- ⏳ Transaction support
+- ⏳ Pattern matching for LIST
+
+### Future (v1.0.x)
+- ⏳ TLS/SSL support
+- ⏳ Authentication
+- ⏳ Compression
+- ⏳ Streaming responses
+
+## 📄 License
+
+MIT License - see [LICENSE](LICENSE) for details.
+
+## 🤝 Contributing
+
+Contributions welcome! Please open an issue or PR on GitHub.
+
+## 📧 Contact
+
+- **Email**: mihirrabari2604@gmail.com
+- **Instagram**: @mihirrabariii
+
+---
+
+**Built with ❤️ in Rust**
