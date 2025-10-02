@@ -27,7 +27,7 @@ VedDB CLI is currently tested and supported on **Windows**. You can download the
 - Visit our website and download the latest Windows CLI `.exe`
 
 **Option 2: GitHub Releases**
-- Go to [Releases](https://github.com/yourusername/ved-db/releases)
+- Go to [Releases](https://github.com/Mihir-Rabari/ved-db-rust-client/releases)
 - Download `veddb-cli-v0.0.11-windows.exe`
 
 ### Basic Usage
@@ -206,8 +206,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 - Windows 10/11
 
 ```
-git clone https://github.com/yourusername/ved-db.git
-cd ved-db\ved-db-rust-client
+git clone https://github.com/Mihir-Rabari/ved-db-rust-client.git
+cd ved-db-rust-client
 cargo build --release
 ```
 
