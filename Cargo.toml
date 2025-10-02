@@ -9,8 +9,14 @@ homepage = "https://github.com/Mihir-Rabari/ved-db-rust-client"
 documentation = "https://docs.rs/veddb-client"
 readme = "README.md"
 license = "MIT"
-keywords = ["database", "kv-store", "client", "async"]
+keywords = ["database", "kv-store", "client", "async", "veddb"]
 categories = ["database", "network-programming"]
+exclude = [
+    "examples/",
+    "benches/",
+    ".github/",
+    ".gitignore",
+]
 
 [lib]
 name = "veddb_client"

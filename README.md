@@ -1,8 +1,12 @@
 # VedDB Rust Client v0.0.11
 
-**Official Rust client and CLI for VedDB Server**
+**Official Rust client library and CLI tool for VedDB Server**
 
-A fast, easy-to-use Rust client library and command-line interface for interacting with VedDB Server. Built with async/await and designed for high performance.
+This repository provides both a Rust client library and a command-line interface (CLI) for interacting with VedDB Server. Built with async/await and designed for high performance.
+
+**What's included:**
+- 📚 **Rust Library** (`veddb-client`) - Async client for embedding in your applications
+- 🖥️ **CLI Tool** (`veddb-cli.exe`) - Command-line interface for interactive use
 
 ![Windows](https://img.shields.io/badge/platform-windows-blue)
 ![Rust](https://img.shields.io/badge/rust-1.75+-orange)

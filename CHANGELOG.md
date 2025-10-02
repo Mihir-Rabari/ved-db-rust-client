@@ -1,6 +1,6 @@
 # Changelog
 
-All notable changes to VedDB Rust Client will be documented in this file.
+All notable changes to VedDB Rust Client (Library + CLI) will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 
@@ -9,11 +9,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 ## [0.0.11] - 2025-10-02
 
 ### Added
-- ✨ **LIST command** - List all keys stored in the database
-- 📝 **Enhanced CLI** - Better error messages and user feedback
-- 🔧 **Connection pooling** - Efficient connection reuse
-- 📊 **Multiple output formats** - Table, JSON, and raw output options
-- ⚡ **Async/await** - Full async support with Tokio
+- ✨ **LIST command** - List all keys stored in the database (both library and CLI)
+- 📝 **Enhanced CLI tool** - Better error messages and user feedback
+- 🔧 **Connection pooling** - Efficient connection reuse in library
+- 📊 **Multiple output formats** - Table, JSON, and raw output in CLI
+- ⚡ **Async/await** - Full async support with Tokio in library
+- 🖥️ **Complete CLI binary** - `veddb-cli.exe` for Windows
 
 ### Changed
 - 🚀 **Protocol implementation** - Updated to match server v0.1.21
