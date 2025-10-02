@@ -2,10 +2,14 @@
 name = "veddb-client"
 version = "0.0.11"
 edition = "2021"
-description = "Official Rust client and CLI for VedDB - Fast, lightweight in-memory key-value database"
-repository = "https://github.com/mihir-Rabari/ved-db-server"
+authors = ["Mihir Rabari <mihirrabari2604@gmail.com>"]
+description = "Official Rust client library and CLI for VedDB - Fast, lightweight in-memory key-value database"
+repository = "https://github.com/Mihir-Rabari/ved-db-rust-client"
+homepage = "https://github.com/Mihir-Rabari/ved-db-rust-client"
+documentation = "https://docs.rs/veddb-client"
+readme = "README.md"
 license = "MIT"
-keywords = ["kv", "database", "client", "cli"]
+keywords = ["database", "kv-store", "client", "async"]
 categories = ["database", "network-programming"]
 
 [lib]
