@@ -1,5 +1,12 @@
 # VedDB Rust Client v0.0.12
 
+[![Crates.io](https://img.shields.io/crates/v/veddb-client.svg)](https://crates.io/crates/veddb-client)
+[![Documentation](https://docs.rs/veddb-client/badge.svg)](https://docs.rs/veddb-client)
+[![Downloads](https://img.shields.io/crates/d/veddb-client.svg)](https://crates.io/crates/veddb-client)
+![Windows](https://img.shields.io/badge/platform-windows-blue)
+![Rust](https://img.shields.io/badge/rust-1.75+-orange)
+![License](https://img.shields.io/badge/license-MIT-green)
+
 **Official Rust client library and CLI tool for VedDB Server**
 
 This repository provides both a Rust client library and a command-line interface (CLI) for interacting with VedDB Server. Built with async/await and designed for high performance.
@@ -8,9 +15,10 @@ This repository provides both a Rust client library and a command-line interface
 - 📚 **Rust Library** (`veddb-client`) - Async client for embedding in your applications
 - 🖥️ **CLI Tool** (`veddb-cli.exe`) - Command-line interface for interactive use
 
-![Windows](https://img.shields.io/badge/platform-windows-blue)
-![Rust](https://img.shields.io/badge/rust-1.75+-orange)
-![License](https://img.shields.io/badge/license-MIT-green)
+**Links:**
+- 📦 [Crates.io](https://crates.io/crates/veddb-client)
+- 📚 [Documentation](https://docs.rs/veddb-client)
+- 🔗 [GitHub](https://github.com/Mihir-Rabari/ved-db-rust-client)
 
 ## ✨ Features
 
