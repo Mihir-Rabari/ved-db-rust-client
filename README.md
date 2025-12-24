@@ -1,4 +1,4 @@
-# VedDB Rust Client v0.0.12
+# VedDB Rust Client v0.2.0
 
 [![Crates.io](https://img.shields.io/crates/v/veddb-client.svg)](https://crates.io/crates/veddb-client)
 [![Documentation](https://docs.rs/veddb-client/badge.svg)](https://docs.rs/veddb-client)
@@ -9,7 +9,7 @@
 
 **Official Rust client library and CLI tool for VedDB Server**
 
-This repository provides both a Rust client library and a command-line interface (CLI) for interacting with VedDB Server. Built with async/await and designed for high performance.
+This repository provides both a Rust client library and a command-line interface (CLI) for interacting with VedDB Server. Fully supports VedDB v0.2.0 features including Document Store, Encryption, and Replication.
 
 **What's included:**
 - 📚 **Rust Library** (`veddb-client`) - Async client for embedding in your applications
@@ -36,10 +36,7 @@ See [`docs/README.md`](docs/README.md) for a navigable index.
 ## 🧑‍💻 Developer Resources
 
 - **VedDB Server (Rust)**: https://github.com/Mihir-Rabari/ved-db-server
-- **Latest Server Release (Windows)**: https://github.com/Mihir-Rabari/ved-db-server/releases
-- **VedDB JavaScript Client**: https://github.com/Mihir-Rabari/veddb-js-client
-- **VedDB API Gateway**: https://github.com/Mihir-Rabari/veddb-api
-- **Issue Tracker**: https://github.com/Mihir-Rabari/ved-db-rust-client/issues
+- **Docker Image**: https://hub.docker.com/r/mihirrabariii/veddb-server
 
 ## ✨ Features
 
@@ -52,16 +49,22 @@ See [`docs/README.md`](docs/README.md) for a navigable index.
 
 ## 🚀 Quick Start
 
+### 🐳 Using with Docker (Recommended)
+
+First, start the VedDB server:
+```bash
+docker run -d -p 50051:50051 mihirrabariii/veddb-server:latest
+```
+
+Then you can connect using the CLI or library pointing to `localhost:50051`.
+
 ### Download & Installation (Windows)
 
 VedDB CLI is currently tested and supported on **Windows**. You can download the pre-built executable:
 
-**Option 1: Download from Website**
-- Visit our website and download the latest Windows CLI `.exe`
-
-**Option 2: GitHub Releases**
+**Option 1: GitHub Releases**
 - Go to [Releases](https://github.com/Mihir-Rabari/ved-db-rust-client/releases)
-- Download `veddb-cli-v0.0.12-windows.exe`
+- Download `veddb-cli-v0.2.0-windows.exe`
 
 ### Basic Usage
 
@@ -177,7 +180,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-veddb-client = "0.0.12"
+veddb-client = "0.2.0"
 tokio = { version = "1", features = ["full"] }
 ```
 

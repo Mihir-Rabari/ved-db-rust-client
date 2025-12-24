@@ -17,7 +17,7 @@ Add the client to your project by updating `Cargo.toml`:
 
 ```toml
 [dependencies]
-veddb-client = "0.0.12"
+veddb-client = "0.2.0"
 tokio = { version = "1", features = ["full"] }
 ```
 
@@ -44,14 +44,24 @@ target\release\veddb-cli.exe
 
 ## 🔗 Connecting to VedDB Server
 
-Start the VedDB server locally or point the client to a remote instance:
+You can run the VedDB server in Docker or locally:
 
+### 🐳 Option 1: Docker (Recommended)
+```bash
+# Pull and run the server
+docker run -d -p 50051:50051 mihirrabariii/veddb-server:latest
+```
+
+### 💻 Option 2: Local Binary
 ```bash
 # Start server (from ved-db-server repository)
 .\target\release\veddb-server.exe
+```
 
-# Run CLI against the server
-veddb-cli.exe --server 127.0.0.1:50051 ping
+### ✅ Test Connection
+```bash
+# Run CLI against the server (default localhost:50051)
+veddb-cli.exe ping
 ```
 
 See [CLI Usage](./cli.md) for detailed commands and options.
