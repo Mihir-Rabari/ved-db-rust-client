@@ -61,6 +61,10 @@ pub enum Error {
     #[error("JSON error: {0}")]
     Json(#[from] serde_json::Error),
 
+    /// TLS error
+    #[error("TLS error: {0}")]
+    Tls(String),
+
     /// Other errors
     #[error("{0}")]
     Other(String),
@@ -90,6 +94,11 @@ impl Error {
     /// Create an invalid response error
     pub fn invalid_response<S: Into<String>>(msg: S) -> Self {
         Error::InvalidResponse(msg.into())
+    }
+
+    /// Create a TLS error
+    pub fn tls<S: Into<String>>(msg: S) -> Self {
+        Error::Tls(msg.into())
     }
 
     /// Create an other error

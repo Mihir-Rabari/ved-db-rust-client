@@ -1,15 +1,15 @@
 [package]
 name = "veddb-client"
-version = "0.0.12"
+version = "0.2.0"
 edition = "2021"
 authors = ["Mihir Rabari <mihirrabari2604@gmail.com>"]
-description = "Official Rust client library and CLI for VedDB - Fast, lightweight in-memory key-value database"
+description = "Official Rust client library and CLI for VedDB v0.2.0 - Hybrid document database with Redis-like caching"
 repository = "https://github.com/Mihir-Rabari/ved-db-rust-client"
 homepage = "https://github.com/Mihir-Rabari/ved-db-rust-client"
 documentation = "https://docs.rs/veddb-client"
 readme = "README.md"
 license = "MIT"
-keywords = ["database", "kv-store", "client", "async", "veddb"]
+keywords = ["database", "document-store", "client", "async", "veddb"]
 categories = ["database", "network-programming"]
 exclude = [
     "examples/",
@@ -27,6 +27,9 @@ bench = true
 
 [dependencies]
 tokio = { version = "1.0", features = ["full"] }
+tokio-rustls = "0.24"
+rustls = { version = "0.21", features = ["dangerous_configuration"] }
+rustls-pemfile = "1.0"
 thiserror = "1.0"
 bytes = "1.0"
 tracing = "0.1"
@@ -38,6 +41,11 @@ clap = { version = "4.0", features = ["derive", "env"] }
 colored = "2.0"
 prettytable-rs = "0.10"
 indicatif = { version = "0.17", features = ["tokio"] }
+chrono = { version = "0.4", features = ["serde"] }
+uuid = { version = "1.0", features = ["v4", "serde"] }
+hex = "0.4"
+rand = "0.8"
+anyhow = "1.0"
 
 [dev-dependencies]
 tokio-test = "0.4"

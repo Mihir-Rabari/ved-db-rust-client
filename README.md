@@ -20,6 +20,27 @@ This repository provides both a Rust client library and a command-line interface
 - 📚 [Documentation](https://docs.rs/veddb-client)
 - 🔗 [GitHub](https://github.com/Mihir-Rabari/ved-db-rust-client)
 
+## 📘 Documentation Set
+
+The repository ships with a full documentation suite under `docs/`:
+
+- [Overview](docs/overview.md)
+- [Installation Guide](docs/installation.md)
+- [Library Usage Guide](docs/library.md)
+- [CLI Usage Guide](docs/cli.md)
+- [Configuration & Tuning](docs/configuration.md)
+- [Troubleshooting](docs/troubleshooting.md)
+
+See [`docs/README.md`](docs/README.md) for a navigable index.
+
+## 🧑‍💻 Developer Resources
+
+- **VedDB Server (Rust)**: https://github.com/Mihir-Rabari/ved-db-server
+- **Latest Server Release (Windows)**: https://github.com/Mihir-Rabari/ved-db-server/releases
+- **VedDB JavaScript Client**: https://github.com/Mihir-Rabari/veddb-js-client
+- **VedDB API Gateway**: https://github.com/Mihir-Rabari/veddb-api
+- **Issue Tracker**: https://github.com/Mihir-Rabari/ved-db-rust-client/issues
+
 ## ✨ Features
 
 - **🚀 Async/Await**: Built on Tokio for high-performance async I/O

@@ -1,13 +1,14 @@
-//! # VedDB Rust Client
+//! # VedDB Rust Client v0.2.0
 //!
 //! [![Crates.io](https://img.shields.io/crates/v/veddb-client.svg)](https://crates.io/crates/veddb-client)
 //! [![Documentation](https://docs.rs/veddb-client/badge.svg)](https://docs.rs/veddb-client)
 //! [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 //!
-//! **Official Rust client library and CLI for VedDB** - A fast, lightweight in-memory key-value database.
+//! **Official Rust client library for VedDB v0.2.0** - A hybrid document database with Redis-like caching.
 //!
-//! This crate provides both a **Rust library** for embedding in your applications and a **CLI tool** 
-//! (`veddb-cli`) for interactive database operations.
+//! VedDB v0.2.0 combines MongoDB-like persistent document storage with Redis-like in-memory caching 
+//! in a single unified system. This client library provides full support for both legacy v0.1.x 
+//! key-value operations and new v0.2.0 document operations.
 //!
 //! ## 🚀 Quick Start
 //!
@@ -15,11 +16,11 @@
 //!
 //! ```toml
 //! [dependencies]
-//! veddb-client = "0.0.11"
+//! veddb-client = "0.2.0"
 //! tokio = { version = "1", features = ["full"] }
 //! ```
 //!
-//! ### Basic Example
+//! ### Basic Key-Value Operations (v0.1.x compatibility)
 //!
 //! ```no_run
 //! use veddb_client::{Client, Result};
@@ -40,12 +41,89 @@
 //!     let value = client.get("name").await?;
 //!     println!("Value: {}", String::from_utf8_lossy(&value));
 //!     
-//!     // List all keys
-//!     let keys = client.list_keys().await?;
-//!     println!("Keys: {:?}", keys);
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ### Document Operations (v0.2.0)
+//!
+//! ```no_run
+//! use veddb_client::{Client, Document, QueryRequest, InsertDocRequest, Value};
+//! use std::collections::BTreeMap;
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let client = Client::connect("127.0.0.1:50051").await?;
 //!     
-//!     // Delete a key
-//!     client.delete("name").await?;
+//!     // Create a document
+//!     let mut doc = Document::new();
+//!     doc.insert("name", "Alice");
+//!     doc.insert("age", 30i32);
+//!     doc.insert("active", true);
+//!     
+//!     // Insert document
+//!     client.insert_document("users", doc).await?;
+//!     
+//!     // Query documents
+//!     let query = QueryRequest {
+//!         collection: "users".to_string(),
+//!         filter: Some(Value::Object({
+//!             let mut filter = BTreeMap::new();
+//!             filter.insert("active".to_string(), Value::Bool(true));
+//!             filter
+//!         })),
+//!         projection: None,
+//!         sort: None,
+//!         skip: None,
+//!         limit: Some(10),
+//!     };
+//!     
+//!     let documents = client.query(query).await?;
+//!     println!("Found {} documents", documents.len());
+//!     
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ### TLS Connection
+//!
+//! ```no_run
+//! use veddb_client::{Client, TlsConfig};
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     // Configure TLS
+//!     let tls_config = TlsConfig::new("localhost")
+//!         .accept_invalid_certs(); // For testing only
+//!     
+//!     // Connect with TLS
+//!     let client = Client::connect_with_tls("127.0.0.1:50051", tls_config).await?;
+//!     
+//!     client.ping().await?;
+//!     println!("Secure connection established!");
+//!     
+//!     Ok(())
+//! }
+//! ```
+//!
+//! ### Authentication
+//!
+//! ```no_run
+//! use veddb_client::{Client, TlsConfig, AuthConfig};
+//!
+//! #[tokio::main]
+//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//!     let tls_config = TlsConfig::new("localhost");
+//!     let auth_config = AuthConfig::username_password("admin", "password");
+//!     
+//!     let client = Client::connect_with_auth(
+//!         "127.0.0.1:50051",
+//!         Some(tls_config),
+//!         auth_config,
+//!     ).await?;
+//!     
+//!     client.ping().await?;
+//!     println!("Authenticated connection established!");
 //!     
 //!     Ok(())
 //! }
@@ -53,33 +131,50 @@
 //!
 //! ## ✨ Features
 //!
+//! ### Core Features
 //! - **Async/Await** - Built on Tokio for high-performance async I/O
 //! - **Connection Pooling** - Efficient connection management and reuse
 //! - **Type-Safe** - Full Rust type safety and error handling
-//! - **All Operations** - PING, SET, GET, DELETE, LIST commands
-//! - **CLI Tool** - Command-line interface included (`veddb-cli`)
+//! - **Protocol Support** - Both v0.1.x (legacy) and v0.2.0 protocols
 //!
-//! ## 📖 Usage Examples
+//! ### Security Features
+//! - **TLS 1.3 Support** - Encrypted connections with certificate validation
+//! - **Authentication** - Username/password and JWT token authentication
+//! - **Mutual TLS** - Client certificate authentication support
 //!
-//! ### Connection Pooling
+//! ### v0.2.0 Features
+//! - **Document Storage** - MongoDB-like document operations with JSON support
+//! - **Collections & Indexes** - Organize documents and optimize queries
+//! - **Advanced Data Structures** - Redis-like lists, sets, sorted sets, hashes
+//! - **Pub/Sub Messaging** - Real-time publish-subscribe communication
+//! - **Hybrid Architecture** - Automatic routing between cache and persistent layers
+//!
+//! ## 📖 Advanced Usage
+//!
+//! ### Advanced Data Structures
 //!
 //! ```no_run
-//! use veddb_client::Client;
+//! use veddb_client::{Client, ListOpRequest, ListOperation, Value};
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
-//!     // Create client with connection pool (10 connections)
-//!     let client = Client::with_pool_size("127.0.0.1:50051", 10).await?;
+//!     let client = Client::connect("127.0.0.1:50051").await?;
 //!     
-//!     // Connections are automatically managed
-//!     client.set("key1", "value1").await?;
-//!     client.set("key2", "value2").await?;
+//!     // List operations
+//!     let list_req = ListOpRequest {
+//!         key: "mylist".to_string(),
+//!         operation: ListOperation::Push {
+//!             values: vec![Value::String("item1".to_string())],
+//!             left: true,
+//!         },
+//!     };
+//!     client.list_operation(list_req).await?;
 //!     
 //!     Ok(())
 //! }
 //! ```
 //!
-//! ### Working with Binary Data
+//! ### Pub/Sub Messaging
 //!
 //! ```no_run
 //! use veddb_client::Client;
@@ -88,79 +183,35 @@
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     let client = Client::connect("127.0.0.1:50051").await?;
 //!     
-//!     // Store binary data
-//!     let data = vec![0x01, 0x02, 0x03, 0x04];
-//!     client.set("binary_key", &data).await?;
+//!     // Subscribe to a channel
+//!     client.subscribe("events").await?;
 //!     
-//!     // Retrieve binary data
-//!     let retrieved = client.get("binary_key").await?;
-//!     assert_eq!(retrieved, data);
+//!     // Publish a message
+//!     client.publish("events", b"Hello, World!").await?;
 //!     
 //!     Ok(())
 //! }
 //! ```
 //!
-//! ### Error Handling
+//! ## 🔌 Protocol Support
 //!
-//! ```no_run
-//! use veddb_client::{Client, Error};
+//! VedDB v0.2.0 client supports both protocols:
 //!
-//! #[tokio::main]
-//! async fn main() {
-//!     let client = Client::connect("127.0.0.1:50051").await.unwrap();
-//!     
-//!     match client.get("nonexistent_key").await {
-//!         Ok(value) => println!("Found: {:?}", value),
-//!         Err(Error::Server(msg)) if msg.contains("NotFound") => {
-//!             println!("Key not found");
-//!         }
-//!         Err(e) => eprintln!("Error: {}", e),
-//!     }
-//! }
-//! ```
+//! ### v0.1.x Protocol (Legacy)
+//! - Simple key-value operations
+//! - Pub/sub messaging
+//! - Binary protocol over TCP
 //!
-//! ## 🖥️ CLI Tool
-//!
-//! This crate includes `veddb-cli`, a command-line interface for VedDB:
-//!
-//! ```bash
-//! # Ping server
-//! veddb-cli ping
-//!
-//! # Set a key
-//! veddb-cli kv set name Alice
-//!
-//! # Get a key
-//! veddb-cli kv get name
-//!
-//! # List all keys
-//! veddb-cli kv list
-//!
-//! # Delete a key
-//! veddb-cli kv del name
-//! ```
-//!
-//! ## 🔌 Protocol
-//!
-//! VedDB uses a simple binary protocol over TCP:
-//!
-//! - **Little-endian** encoding for all integers
-//! - **Command format**: 24-byte header + payload
-//! - **Response format**: 20-byte header + payload
-//!
-//! ### Supported Operations
-//!
-//! | OpCode | Command | Description |
-//! |--------|---------|-------------|
-//! | `0x01` | PING | Health check |
-//! | `0x02` | SET | Store key-value pair |
-//! | `0x03` | GET | Retrieve value by key |
-//! | `0x04` | DELETE | Remove key |
-//! | `0x09` | LIST | List all keys |
+//! ### v0.2.0 Protocol (New)
+//! - Document operations with JSON support
+//! - Authentication and authorization
+//! - Advanced data structures
+//! - TLS encryption
+//! - Collection and index management
 //!
 //! ## 🔗 Related
 //!
-//! - **Server**: [ved-db-server](https://github.com/Mihir-Rabari/ved-db-server) - VedDB Server v0.1.21
+//! - **Server**: [ved-db-server](https://github.com/Mihir-Rabari/ved-db-server) - VedDB Server v0.2.0
 //! - **Repository**: [GitHub](https://github.com/Mihir-Rabari/ved-db-rust-client)
 //!
 //! ## 📄 License
@@ -175,9 +226,20 @@ mod connection;
 mod error;
 mod types;
 
-pub use connection::{Client, ClientBuilder, Connection, ConnectionPool};
+pub use connection::{Client, ClientBuilder, Connection, ConnectionPool, TlsConfig, AuthConfig};
 pub use error::Error;
-pub use types::{Command, Response, StatusCode};
+pub use types::{
+    Command, Response, StatusCode, OpCode, Value, Document, DocumentId, ObjectId,
+    AuthRequest, AuthMethod, AuthCredentials, AuthResponse,
+    QueryRequest, InsertDocRequest, UpdateDocRequest, DeleteDocRequest,
+    CreateCollectionRequest, CreateIndexRequest, IndexField,
+    ListCollectionsRequest, DropCollectionRequest, DropIndexRequest, ListIndexesRequest,
+    ListOpRequest, ListOperation, SetOpRequest, SetOperation,
+    SortedSetOpRequest, SortedSetOperation, ScoredMember,
+    HashOpRequest, HashOperation, OperationResponse,
+    CreateUserRequest, DeleteUserRequest, UpdateUserRoleRequest, UserInfo, ServerInfo,
+    PROTOCOL_V1, PROTOCOL_V2
+};
 
 /// Custom result type for VedDB operations
 pub type Result<T> = std::result::Result<T, Error>;
@@ -186,7 +248,7 @@ pub type Result<T> = std::result::Result<T, Error>;
 pub use bytes;
 
 /// Re-export of the `tracing` crate for convenience
-#[cfg(feature = "tracing")]
+#[cfg(feature = "tracing-subscriber")]
 pub use tracing;
 
 #[cfg(test)]
