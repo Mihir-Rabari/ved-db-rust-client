@@ -3,7 +3,7 @@ name = "veddb-client"
 version = "0.2.0"
 edition = "2021"
 authors = ["Mihir Rabari <mihirrabari2604@gmail.com>"]
-description = "Official Rust client library and CLI for VedDB v0.2.0 - Hybrid document database with Redis-like caching"
+description = "Official Rust client library for VedDB v0.2.0 - Hybrid document database with Redis-like caching"
 repository = "https://github.com/Mihir-Rabari/ved-db-rust-client"
 homepage = "https://github.com/Mihir-Rabari/ved-db-rust-client"
 documentation = "https://docs.rs/veddb-client"
@@ -37,10 +37,6 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 async-channel = "1.8"
 tracing-subscriber = { version = "0.3", optional = true }
-clap = { version = "4.0", features = ["derive", "env"] }
-colored = "2.0"
-prettytable-rs = "0.10"
-indicatif = { version = "0.17", features = ["tokio"] }
 chrono = { version = "0.4", features = ["serde"] }
 uuid = { version = "1.0", features = ["v4", "serde"] }
 hex = "0.4"
@@ -50,7 +46,6 @@ anyhow = "1.0"
 [dev-dependencies]
 tokio-test = "0.4"
 tempfile = "3.2"
-# wiremock removed as it was causing dependency issues
 
 [dev-dependencies.criterion]
 version = "0.5"
@@ -59,11 +54,6 @@ features = ["html_reports"]
 [[bench]]
 name = "benchmarks"
 harness = false
-
-[[bin]]
-name = "veddb-cli"
-path = "src/bin/veddb-cli.rs"
-doc = false
 
 [features]
 default = ["tracing-subscriber"]
